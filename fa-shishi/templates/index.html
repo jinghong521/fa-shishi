@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法时时 - 强大又简单</title>
+    <style>
+        :root {
+            --ink: #111827;
+            --muted: #64748b;
+            --line: rgba(15, 23, 42, 0.1);
+            --panel: rgba(255, 255, 255, 0.84);
+            --panel-solid: #ffffff;
+            --accent: #6d28d9;
+            --accent-dark: #4c1d95;
+            --accent-soft: #ede9fe;
+            --gold: #b7791f;
+            --success: #057a55;
+            --shadow: 0 24px 80px rgba(15, 23, 42, 0.14);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "PingFang SC", "Microsoft YaHei", "Inter", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(183, 121, 31, 0.16), transparent 28%),
+                radial-gradient(circle at 84% 10%, rgba(109, 40, 217, 0.14), transparent 30%),
+                linear-gradient(135deg, #f8fafc 0%, #fff 46%, #f3f4f6 100%);
+        }
+
+        .page-shell {
+            width: min(1180px, calc(100% - 40px));
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 28px 0;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 24px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 25px;
+            font-weight: 800;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 38%),
+                linear-gradient(135deg, var(--accent-dark), var(--accent) 56%, #c084fc);
+            box-shadow: 0 14px 36px rgba(109, 40, 217, 0.26);
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        .brand p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .points {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid rgba(5, 122, 85, 0.2);
+            border-radius: 999px;
+            background: rgba(236, 253, 245, 0.82);
+            color: var(--success);
+            font-size: 14px;
+            font-weight: 650;
+            backdrop-filter: blur(16px);
+        }
+
+        .workspace {
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            gap: 22px;
+        }
+
+        .side-panel,
+        .chat-panel {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(22px);
+        }
+
+        .side-panel {
+            border-radius: 24px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .headline {
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .eyebrow {
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0;
+            margin-bottom: 12px;
+        }
+
+        .headline h2 {
+            font-size: 34px;
+            line-height: 1.12;
+            letter-spacing: 0;
+        }
+
+        .headline p {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .tabs {
+            display: grid;
+            gap: 10px;
+        }
+
+        .tab {
+            min-height: 46px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #475569;
+            font-size: 15px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: 160ms ease;
+        }
+
+        .tab span {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .tab:hover,
+        .tab.active {
+            border-color: rgba(109, 40, 217, 0.18);
+            background: rgba(237, 233, 254, 0.72);
+            color: var(--accent-dark);
+        }
+
+        .quick-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quick-item {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.58);
+        }
+
+        .quick-item strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .quick-item p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .chat-panel {
+            min-height: 680px;
+            border-radius: 28px;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr) auto;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 22px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .chat-header h2 {
+            font-size: 20px;
+            letter-spacing: 0;
+        }
+
+        .chat-header p {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status-pill {
+            flex: 0 0 auto;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            border-radius: 999px;
+            color: var(--accent-dark);
+            background: var(--accent-soft);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 0 5px rgba(109, 40, 217, 0.12);
+        }
+
+        .chat-container {
+            min-height: 0;
+            padding: 26px 24px;
+            overflow-y: auto;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.62)),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+            background-size: auto, 44px 44px, 44px 44px;
+        }
+
+        .empty-state {
+            height: 100%;
+            min-height: 340px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #334155;
+            font-size: 22px;
+        }
+
+        .empty-state p {
+            max-width: 460px;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .msg-item {
+            margin-bottom: 18px;
+            display: flex;
+            animation: rise 180ms ease-out;
+        }
+
+        .msg-item.user-msg {
+            justify-content: flex-end;
+        }
+
+        .content {
+            max-width: min(78%, 680px);
+            padding: 13px 16px;
+            border-radius: 16px;
+            line-height: 1.72;
+            font-size: 15px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .user-msg .content {
+            color: #fff;
+            border-bottom-right-radius: 5px;
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+            box-shadow: 0 16px 34px rgba(109, 40, 217, 0.22);
+        }
+
+        .ai-msg .content {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-bottom-left-radius: 5px;
+            background: rgba(255, 255, 255, 0.94);
+            color: #1f2937;
+            box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+        }
+
+        .ai-msg.loading .content {
+            color: var(--muted);
+        }
+
+        .dots {
+            display: inline-flex;
+            gap: 4px;
+            vertical-align: middle;
+        }
+
+        .dots i {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #94a3b8;
+            animation: pulse 900ms infinite ease-in-out;
+        }
+
+        .dots i:nth-child(2) {
+            animation-delay: 120ms;
+        }
+
+        .dots i:nth-child(3) {
+            animation-delay: 240ms;
+        }
+
+        .composer {
+            padding: 18px;
+            border-top: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.88);
+        }
+
+        .input-wrapper {
+            border: 1px solid rgba(109, 40, 217, 0.18);
+            border-radius: 20px;
+            padding: 14px;
+            background: var(--panel-solid);
+            box-shadow: 0 16px 46px rgba(15, 23, 42, 0.08);
+            transition: 160ms ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: rgba(109, 40, 217, 0.48);
+            box-shadow: 0 18px 54px rgba(109, 40, 217, 0.14);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 86px;
+            max-height: 220px;
+            border: 0;
+            outline: 0;
+            resize: vertical;
+            color: #1f2937;
+            font: inherit;
+            font-size: 15px;
+            line-height: 1.7;
+            background: transparent;
+        }
+
+        textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        .toolbar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .left-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
+
+        .model-select,
+        .think-btn,
+        .send-btn {
+            border: 0;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .model-select {
+            max-width: 220px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 11px;
+            color: #334155;
+            background: #f1f5f9;
+            outline: 0;
+        }
+
+        .think-btn {
+            height: 38px;
+            padding: 0 13px;
+            border-radius: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #475569;
+            background: #f1f5f9;
+            font-weight: 650;
+            transition: 160ms ease;
+        }
+
+        .think-btn.active {
+            color: var(--accent-dark);
+            background: var(--accent-soft);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            flex: 0 0 auto;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+            box-shadow: 0 14px 30px rgba(109, 40, 217, 0.24);
+            transition: 160ms ease;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 38px rgba(109, 40, 217, 0.3);
+        }
+
+        .send-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+        }
+
+        .send-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 80%, 100% {
+                opacity: 0.35;
+                transform: translateY(0);
+            }
+            40% {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .page-shell {
+                width: min(100% - 28px, 720px);
+                padding: 18px 0;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .side-panel {
+                border-radius: 20px;
+            }
+
+            .headline h2 {
+                font-size: 28px;
+            }
+
+            .tabs {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .tab {
+                justify-content: center;
+            }
+
+            .tab span,
+            .quick-list {
+                display: none;
+            }
+
+            .chat-panel {
+                min-height: 620px;
+                border-radius: 22px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .topbar,
+            .chat-header,
+            .toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .points,
+            .status-pill,
+            .send-btn {
+                align-self: flex-start;
+            }
+
+            .brand h1 {
+                font-size: 23px;
+            }
+
+            .content {
+                max-width: 92%;
+            }
+
+            .tabs {
+                gap: 8px;
+            }
+
+            .tab {
+                min-height: 40px;
+                padding: 0 10px;
+                font-size: 14px;
+            }
+
+            .chat-container,
+            .chat-header {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .left-bar,
+            .model-select {
+                width: 100%;
+            }
+
+            .think-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .send-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page-shell">
+        <header class="topbar">
+            <section class="brand" aria-label="法时时">
+                <div class="logo" aria-hidden="true">法</div>
+                <div>
+                    <h1>法时时</h1>
+                    <p>强大又简单的企业法律 AI 助手</p>
+                </div>
+            </section>
+
+            <div class="points">剩余点数 {{ remaining_points }} / {{ total_points }}</div>
+        </header>
+
+        <section class="workspace">
+            <aside class="side-panel">
+                <div>
+                    <div class="headline">
+                        <div class="eyebrow">20+ 年企业法律服务经验沉淀</div>
+                        <h2>把合同问题，聊成清晰方案。</h2>
+                        <p>围绕合同起草、条款审查、风险提示与谈判要点，保持专业、简洁、可落地。</p>
+                    </div>
+
+                    <nav class="tabs" aria-label="功能导航">
+                        <div class="tab active">对话 <span>AI</span></div>
+                        <div class="tab">文档 <span>DOC</span></div>
+                        <div class="tab">百宝箱 <span>TOOLS</span></div>
+                    </nav>
+                </div>
+
+                <div class="quick-list" aria-label="能力说明">
+                    <div class="quick-item">
+                        <strong>合同生成</strong>
+                        <p>根据你的业务场景逐步追问，补齐关键要素后生成初稿。</p>
+                    </div>
+                    <div class="quick-item">
+                        <strong>风险审查</strong>
+                        <p>识别权责不清、违约责任、付款节点与争议解决等风险点。</p>
+                    </div>
+                    <div class="quick-item">
+                        <strong>谈判建议</strong>
+                        <p>输出更适合企业视角的修改方向和沟通话术。</p>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="chat-panel" aria-label="AI 对话区">
+                <header class="chat-header">
+                    <div>
+                        <h2>法律合同工作台</h2>
+                        <p>输入需求后，系统会通过多轮问答完善信息并生成建议。</p>
+                    </div>
+                    <div class="status-pill"><i class="status-dot"></i>专业模式</div>
+                </header>
+
+                <div class="chat-container" id="chatContainer">
+                    <div class="empty-state" id="emptyState">
+                        <div>
+                            <h3>今天要处理哪一份合同？</h3>
+                            <p>例如：帮我起草一份软件开发合同，甲方按里程碑付款，需要包含验收、保密和知识产权条款。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="composer" id="chatForm">
+                    <div class="input-wrapper">
+                        <textarea id="prompt" placeholder="请输入合同相关需求，我将通过问答完善信息并自动生成合同"></textarea>
+                        <div class="toolbar">
+                            <div class="left-bar">
+                                <select class="model-select" aria-label="模型选择">
+                                    <option value="qwen-turbo">Qwen Turbo（免费）</option>
+                                </select>
+                                <button class="think-btn" id="thinkBtn" type="button" aria-pressed="false">深度思考</button>
+                            </div>
+                            <button class="send-btn" id="sendBtn" type="submit" aria-label="发送">
+                                <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        const thinkBtn = document.getElementById('thinkBtn');
+        const sendBtn = document.getElementById('sendBtn');
+        const prompt = document.getElementById('prompt');
+        const chatForm = document.getElementById('chatForm');
+        const chatContainer = document.getElementById('chatContainer');
+        const emptyState = document.getElementById('emptyState');
+        const tabs = document.querySelectorAll('.tab');
+        let deepThink = false;
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                tabs.forEach((item) => item.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        thinkBtn.addEventListener('click', () => {
+            deepThink = !deepThink;
+            thinkBtn.classList.toggle('active', deepThink);
+            thinkBtn.setAttribute('aria-pressed', String(deepThink));
+        });
+
+        chatForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const text = prompt.value.trim();
+            if (!text || sendBtn.disabled) return;
+
+            addMsg('user', text);
+            prompt.value = '';
+            sendBtn.disabled = true;
+
+            const loadingMsg = addMsg('ai', '思考中', true);
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: text, deep_thinking: deepThink })
+                });
+
+                const data = await res.json();
+                loadingMsg.remove();
+                addMsg('ai', data.reply || '暂时没有收到有效回复，请稍后再试。');
+            } catch (error) {
+                loadingMsg.remove();
+                addMsg('ai', '请求失败，请检查服务是否正常运行后重试。');
+            } finally {
+                sendBtn.disabled = false;
+                prompt.focus();
+            }
+        });
+
+        prompt.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                chatForm.requestSubmit();
+            }
+        });
+
+        function addMsg(role, content, loading = false) {
+            emptyState.hidden = true;
+
+            const item = document.createElement('div');
+            item.className = `msg-item ${role}-msg${loading ? ' loading' : ''}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'content';
+
+            if (loading) {
+                bubble.textContent = content;
+                const dots = document.createElement('span');
+                dots.className = 'dots';
+                dots.innerHTML = '<i></i><i></i><i></i>';
+                bubble.appendChild(document.createTextNode(' '));
+                bubble.appendChild(dots);
+            } else {
+                bubble.textContent = content;
+            }
+
+            item.appendChild(bubble);
+            chatContainer.appendChild(item);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return item;
+        }
+    </script>
+</body>
+</html>
